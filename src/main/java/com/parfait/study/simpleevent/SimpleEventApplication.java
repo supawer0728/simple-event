@@ -12,6 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+@SuppressWarnings({"SpringJavaAutowiredFieldsWarningInspection", "SpringJavaInjectionPointsAutowiringInspection"})
 @Slf4j
 @Profile({"simple", "advanced", "event", "async-event", "aop-async-event", "distributed-aop-async-event"})
 @EnableAsync(proxyTargetClass = true)
@@ -29,9 +30,9 @@ public class SimpleEventApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
-        log.info("{} would service", memberJoinService.getClass().getCanonicalName());
+        log.info("{} is injected", memberJoinService.getClass().getCanonicalName());
         try {
             Member member = Member.create("test", "test@test.com", "012-3456-7890");
             memberJoinService.join(member);
