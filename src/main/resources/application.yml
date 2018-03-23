@@ -2,6 +2,3 @@ mybatis:
   type-aliases-package: com.parfait.study.simpleevent.model
   configuration:
     map-underscore-to-camel-case: true
-spring:
-  datasource:
-    schema: schema.sql
