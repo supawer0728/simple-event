@@ -3,6 +3,7 @@ package com.parfait.study.simpleevent.service.member;
 import com.parfait.study.simpleevent.aop.PublishEvent;
 import com.parfait.study.simpleevent.mapper.MemberMapper;
 import com.parfait.study.simpleevent.model.SendableParameter;
+import com.parfait.study.simpleevent.model.event.EventHoldingValue;
 import com.parfait.study.simpleevent.model.member.Member;
 import lombok.Getter;
 import lombok.NonNull;
@@ -26,13 +27,13 @@ public class AopAsyncEventMemberJoinService implements MemberJoinService {
         return member;
     }
 
-    public static class AopAsyncMemberJoinedEvent {
+    public static class AopAsyncMemberJoinedEvent implements EventHoldingValue<SendableParameter> {
 
         @Getter
-        private SendableParameter sendableParameter;
+        private SendableParameter value;
 
         public AopAsyncMemberJoinedEvent(@NonNull SendableParameter sendableParameter) {
-            this.sendableParameter = sendableParameter;
+            this.value = sendableParameter;
         }
     }
 }

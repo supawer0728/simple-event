@@ -1,11 +1,12 @@
 package com.parfait.study.simpleevent.service.member;
 
 import com.parfait.study.simpleevent.aop.PublishEvent;
-import com.parfait.study.simpleevent.aop.PublishEvents;
 import com.parfait.study.simpleevent.mapper.MemberMapper;
-import com.parfait.study.simpleevent.model.email.SendEmailRequestEvent;
+import com.parfait.study.simpleevent.model.SendableParameter;
+import com.parfait.study.simpleevent.model.event.EventHoldingValue;
 import com.parfait.study.simpleevent.model.member.Member;
-import com.parfait.study.simpleevent.model.sms.SendSmsRequestEvent;
+import lombok.Getter;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -16,21 +17,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DistributedAopAsyncEventMemberJoinService implements MemberJoinService {
 
-    private static final String emailEventParams =
-            "#{T(com.parfait.study.simpleevent.model.email.SendEmailRequest).create(email, T(com.parfait.study.simpleevent.model.email.EmailTemplateType).JOIN)}";
-    private static final String smsEventParams =
-            "#{T(com.parfait.study.simpleevent.model.sms.SendSmsRequest).create(phoneNo, T(com.parfait.study.simpleevent.model.sms.SmsTemplateType).JOIN)}";
-
     @Autowired
     private MemberMapper memberMapper;
 
-    @PublishEvents({
-            @PublishEvent(eventType = SendEmailRequestEvent.class, params = emailEventParams),
-            @PublishEvent(eventType = SendSmsRequestEvent.class, params = smsEventParams),
-    })
+    @PublishEvent(eventType = DistributedAopAsyncMemberJoinedEvent.class, params = "#{T(com.parfait.study.simpleevent.model.SendableParameter).create(email, phoneNo)}")
     public Member join(Member member) {
 
         memberMapper.insert(member);
         return member;
+    }
+
+    public static class DistributedAopAsyncMemberJoinedEvent implements EventHoldingValue<SendableParameter> {
+
+        @Getter
+        private SendableParameter value;
+
+        public DistributedAopAsyncMemberJoinedEvent(@NonNull SendableParameter sendableParameter) {
+            this.value = sendableParameter;
+        }
     }
 }
